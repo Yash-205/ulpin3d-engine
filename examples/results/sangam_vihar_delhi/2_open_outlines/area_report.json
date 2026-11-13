@@ -1,0 +1,53 @@
+{
+  "area": "/var/folders/nz/y0jh8s152dz7ppt4j_mvccs00000gn/T/ulpin3d_scenarios_mjlt33_e/sangam_vihar_delhi/2_open_outlines",
+  "name": "Sangam Vihar, Delhi \u00b7 drone image + open building outlines (Google/Microsoft, used as the city's outline layer)",
+  "ortho": {
+    "file": "ortho.tif",
+    "crs": "EPSG:32644",
+    "gsd_m": 0.08,
+    "size_px": [
+      3125,
+      3125
+    ]
+  },
+  "parcels": [],
+  "plans": [],
+  "ownership": "no ownership records supplied",
+  "data_grade": "C",
+  "missing": [
+    "lidar",
+    "parcels",
+    "plans",
+    "ownership"
+  ],
+  "buildings": {
+    "source": "outlines file footprints/open_buildings.geojson",
+    "count": 108,
+    "with_lidar_height": 0
+  },
+  "plan_outlines": {
+    "buildings_following_plan": 0,
+    "possible_extensions": 0
+  },
+  "checks": {
+    "overlapping_unit_pairs": 0,
+    "bad_storey_heights": 0,
+    "anomaly_outliers": 0
+  },
+  "seconds": 1.9,
+  "crs": "EPSG:32644",
+  "totals": {
+    "buildings": 108,
+    "units": 108,
+    "ids_issued": 83,
+    "by_status": {
+      "provisional": 83,
+      "flagged": 25
+    },
+    "by_kind": {
+      "whole_level": 108
+    },
+    "unsanctioned_floors": [],
+    "encroachments": []
+  }
+}

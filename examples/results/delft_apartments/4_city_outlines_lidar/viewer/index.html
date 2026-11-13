@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bhu-Aadhaar 3D Cadastre</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600&display=swap">
+<style>
+/* Layout: one-screen survey workstation. 3D scene left, record panel right; stacks on phones. */
+:root{
+  --bg:#e9efed; --panel:#f7faf9; --ink:#15252a; --muted:#56676c; --line:#c7d2cf; --soft:#dfe7e5;
+  --accent:#0b6a73; --accent-ink:#ffffff;
+  --ok:#2e8a4c; --warn:#b97c0c; --bad:#bf3d2a; --unsanc:#7347c2; --air:#3f86d1; --common:#86939a; --whole:#a9b4b1;
+  --edge:#1d2e34; --parcel:#fff3c4;
+  --f-ui:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-label:"IBM Plex Sans Condensed","IBM Plex Sans",ui-sans-serif,system-ui,sans-serif;
+  --f-id:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e1719; --panel:#132025; --ink:#e2ebe9; --muted:#93a5a7; --line:#2a3b40; --soft:#1a2a2f;
+  --accent:#4cb2ba; --accent-ink:#06191c;
+  --ok:#52b872; --warn:#e2a93a; --bad:#ec6a55; --unsanc:#a084ef; --air:#6aaaf0; --common:#7d8b91; --whole:#5f6e6c;
+  --edge:#0a1214; --parcel:#ffe9a3; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1719; --panel:#132025; --ink:#e2ebe9; --muted:#93a5a7; --line:#2a3b40; --soft:#1a2a2f;
+  --accent:#4cb2ba; --accent-ink:#06191c;
+  --ok:#52b872; --warn:#e2a93a; --bad:#ec6a55; --unsanc:#a084ef; --air:#6aaaf0; --common:#7d8b91; --whole:#5f6e6c;
+  --edge:#0a1214; --parcel:#ffe9a3; color-scheme:dark}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 var(--f-ui);overflow:hidden}
+.app{display:grid;grid-template-columns:minmax(0,1fr) 380px;height:100%}
+.stage{position:relative;min-width:0;min-height:0}
+#scene{position:absolute;inset:0;display:block;width:100%;height:100%;touch-action:none}
+.panel{background:var(--panel);border-left:1px solid var(--line);overflow-y:auto;min-width:0;
+  padding-block:16px 28px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  display:flex;flex-direction:column;gap:18px}
+.eyebrow{font:600 11px/1 var(--f-label);letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+h1{font:600 19px/1.25 var(--f-ui);margin:4px 0 0;text-wrap:balance}
+.meta-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.tag{font:500 11px/1 var(--f-label);letter-spacing:.04em;padding:5px 7px;border-radius:4px;background:var(--soft);color:var(--muted)}
+.tag.synth{background:var(--warn);color:#1b1300}
+.src{color:var(--muted);font-size:12px;margin-top:8px}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.stat b{display:block;font:600 22px/1.1 var(--f-id);font-variant-numeric:tabular-nums}
+.stat span{font-size:12px;color:var(--muted)}
+.bar{display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--soft);margin-top:12px}
+.bar i{display:block;height:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:transparent;color:var(--ink);
+  font:500 12px/1 var(--f-ui);padding:6px 9px;border-radius:999px;cursor:pointer}
+.chip .dot{width:9px;height:9px;border-radius:50%}
+.chip[aria-pressed="false"]{opacity:.45;text-decoration:line-through}
+.chip:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.ctl{display:grid;gap:10px}
+.ctl label{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted)}
+.ctl label b{color:var(--ink);font:500 12px var(--f-id)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.toggles{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px}
+.toggles label{display:flex;align-items:center;gap:6px;color:var(--ink)}
+.search{display:flex;gap:6px}
+.search input,.verify input{flex:1;min-width:0;border:1px solid var(--line);background:var(--bg);color:var(--ink);
+  border-radius:6px;padding:8px 10px;font:500 13px var(--f-id)}
+.btn{border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);font:600 12px var(--f-ui);
+  border-radius:6px;padding:8px 11px;cursor:pointer;white-space:nowrap}
+.btn.ghost{background:transparent;color:var(--accent)}
+.section{border-top:1px solid var(--line);padding-top:16px;display:grid;gap:10px}
+.card{display:grid;gap:12px}
+.idbox{border:1px solid var(--line);border-radius:8px;padding:10px;background:var(--bg)}
+.segs{display:flex;flex-wrap:nowrap;gap:2px;font:600 15px/1 var(--f-id);letter-spacing:.01em;overflow-x:auto}
+.seg{display:grid;gap:5px;padding:6px 6px 5px;border-radius:4px;background:var(--soft);flex:none}
+.seg small{font:500 9.5px/1 var(--f-label);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.seg.check{background:var(--accent);color:var(--accent-ink)}
+.seg.check small{color:inherit;opacity:.8}
+.idnote{font-size:12px;color:var(--muted);margin-top:8px}
+.pill{display:inline-flex;align-items:center;gap:6px;font:600 11px/1 var(--f-label);letter-spacing:.06em;text-transform:uppercase;
+  padding:5px 8px;border-radius:4px;color:#fff}
+.title-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.title-row h2{font:600 17px/1.25 var(--f-ui);margin:0}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0;font-size:13px}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0;font-variant-numeric:tabular-nums;text-align:right;min-width:0;overflow-wrap:anywhere}
+.meter{height:6px;border-radius:3px;background:var(--soft);overflow:hidden}
+.meter i{display:block;height:100%;background:var(--accent)}
+.issues{margin:0;padding-left:18px;display:grid;gap:4px;font-size:12.5px}
+.list{display:grid;gap:2px;margin:0;padding:0;list-style:none}
+.list button{width:100%;text-align:left;display:grid;grid-template-columns:10px minmax(0,1fr);gap:9px;align-items:start;
+  background:transparent;border:0;border-radius:6px;padding:7px 6px;color:var(--ink);font:13px/1.35 var(--f-ui);cursor:pointer}
+.list button:hover{background:var(--soft)}
+.list .dot{width:9px;height:9px;border-radius:50%;margin-top:4px}
+.list small{display:block;color:var(--muted);font:500 11.5px var(--f-id)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.verify-out{font-size:12.5px}
+.ok{color:var(--ok)} .bad{color:var(--bad)}
+.hud{position:absolute;left:max(12px,env(safe-area-inset-left,0px));bottom:12px;display:flex;gap:8px;flex-wrap:wrap;pointer-events:none}
+.hud span{background:color-mix(in srgb,var(--panel) 88%,transparent);border:1px solid var(--line);border-radius:6px;
+  padding:6px 9px;font:500 12px var(--f-label);color:var(--muted)}
+.tip{position:absolute;pointer-events:none;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px 8px;
+  font:12px/1.3 var(--f-ui);box-shadow:0 4px 14px rgba(0,0,0,.18);transform:translate(12px,12px);white-space:nowrap}
+.tip b{font:600 12px var(--f-id)}
+.empty{color:var(--muted);font-size:13px}
+.err{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--muted)}
+@media (max-width:820px){
+  body{overflow:auto}
+  .app{grid-template-columns:1fr;height:auto}
+  .stage{height:58vh;min-height:320px}
+  .panel{border-left:0;border-top:1px solid var(--line);overflow:visible}
+}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="stage" id="stage">
+    <canvas id="scene" aria-label="3D cadastre of the area"></canvas>
+    <div class="hud" id="hud"></div>
+    <div class="tip" id="tip" hidden></div>
+  </div>
+  <aside class="panel" id="panel">
+    <header>
+      <div class="eyebrow">Bhu-Aadhaar 3D · volumetric cadastre</div>
+      <h1 id="area-name">Area</h1>
+      <div class="meta-row" id="meta-row"></div>
+      <div class="src" id="src"></div>
+    </header>
+    <section class="stats" id="stats" aria-label="Totals"></section>
+    <section>
+      <div class="eyebrow">Status of 3D units</div>
+      <div class="bar" id="bar"></div>
+      <div class="chips" id="chips" role="group" aria-label="Show units by status"></div>
+    </section>
+    <section class="ctl" aria-label="View controls">
+      <div class="search">
+        <input id="q" type="search" placeholder="3D ULPIN, FLAT 402 or owner" aria-label="Search units">
+        <button class="btn" id="qgo">Find</button>
+      </div>
+      <div>
+        <label for="lvl">Show up to level <b id="lvl-v">all</b></label>
+        <input id="lvl" type="range" min="0" max="10" value="10" step="1">
+      </div>
+      <div>
+        <label for="exp">Floor separation <b id="exp-v">0 m</b></label>
+        <input id="exp" type="range" min="0" max="8" value="0" step="0.5">
+      </div>
+      <div class="toggles">
+        <label><input type="checkbox" id="t-iso"> Isolate level</label>
+        <label><input type="checkbox" id="t-air" checked> Air rights</label>
+        <label><input type="checkbox" id="t-common" checked> Common areas</label>
+        <label><input type="checkbox" id="t-ortho" checked> Orthophoto</label>
+      </div>
+      <div class="legend" id="legend"></div>
+    </section>
+    <section class="section" id="detail" aria-live="polite"></section>
+    <section class="section">
+      <div class="eyebrow">Needs attention</div>
+      <ul class="list" id="attn"></ul>
+    </section>
+    <section class="section verify">
+      <div class="eyebrow">Verify a 3D ULPIN offline</div>
+      <div class="search">
+        <input id="vin" placeholder="e.g. 27PUNEW10101H4S02…" aria-label="3D ULPIN to verify" spellcheck="false" autocomplete="off">
+        <button class="btn ghost" id="vgo">Check</button>
+      </div>
+      <div class="verify-out" id="vout"></div>
+    </section>
+    <section class="section">
+      <div class="eyebrow">Open another area</div>
+      <label class="btn ghost" for="file" style="text-align:center">Load cadastre_view.json</label>
+      <input id="file" type="file" accept=".json,application/json" hidden>
+      <div class="empty">Produced by <code>python -m ulpin3d.cli run-area</code> in <code>out/viewer/</code>.</div>
+    </section>
+  </aside>
+</div>
+
+<!-- 3D library: local copy first (works offline at the venue), CDN as fallback -->
+<script src="vendor/three.min.js"></script>
+<script>window.THREE||document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>')</script>
+<script src="vendor/OrbitControls.js"></script>
+<script>(window.THREE&&THREE.OrbitControls)||document.write('<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"><\/script>')</script>
+<script src="cadastre_data.js"></script>
+<script>
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id)};
+var RM=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---------- 3D ULPIN arithmetic (same as ulpin3d/ulpin.py and the web demo) ---------- */
+var SYM="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ", B32="0123456789ABCDEFGHIJKLMNOPQRSTUV";
+function luhn36(p){var s=0,f=2;for(var i=p.length-1;i>=0;i--){var v=SYM.indexOf(p[i]);if(v<0)return null;var x=v*f;if(x>=36)x=Math.floor(x/36)+x%36;s+=x;f=f===2?1:2}return SYM[(36-s%36)%36]}
+function unb32(s){var n=0;for(var i=0;i<s.length;i++){var v=B32.indexOf(s[i]);if(v<0)return NaN;n=n*32+v}return n}
+function levelName(l){if(l===0)return"ground";if(l<0)return"basement "+(-l);var o=["th","st","nd","rd"],v=l%100;return l+(o[(v-20)%10]||o[v]||o[0])+" floor"}
+function splitId(id,pc){return{parcel:id.slice(0,pc),level:id.slice(pc,pc+2),cls:id.slice(pc+2,pc+3),unit:id.slice(pc+3,pc+5),check:id.slice(pc+5)}}
+function verifyId(s,pc){
+  var t=String(s||"").toUpperCase().replace(/[^0-9A-Z]/g,"");
+  if(!t)return{ok:false,why:"Type or paste an ID."};
+  if(t.length!==pc+6)return{ok:false,why:"A 3D ULPIN has "+(pc+6)+" characters; this has "+t.length+"."};
+  var e=luhn36(t.slice(0,-1));
+  if(e===null)return{ok:false,why:"Only letters A–Z and digits 0–9 are allowed."};
+  if("SAI".indexOf(t[pc+2])<0)return{ok:false,why:"Class must be S, A or I (found "+t[pc+2]+")."};
+  if(e!==t.slice(-1))return{ok:false,why:"Check character should be "+e+", not "+t.slice(-1)+". One character is mistyped."};
+  return{ok:true,t:t};
+}
+
+var D=window.CADASTRE;
+if(!D){$("stage").innerHTML='<div class="err">No area loaded. Run <code>run-area</code>, or load a cadastre_view.json below.</div>';}
+
+/* ---------- theme tokens -> scene colours ---------- */
+function tok(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()||"#888"}
+var STATUS=[["validated","Validated","--ok"],["provisional","Provisional","--warn"],["unsanctioned","Unsanctioned","--unsanc"],["flagged","Flagged · no ID","--bad"]];
+function colFor(u){
+  if(u.kind==="air_rights")return tok("--air");
+  if(u.kind==="common")return tok("--common");
+  for(var i=0;i<STATUS.length;i++)if(STATUS[i][0]===u.status)return tok(STATUS[i][2]);
+  return tok("--whole");
+}
+
+/* ---------- scene ---------- */
+var canvas=$("scene"),renderer,scene,camera,controls,ground,parcelObjs=[],sel=null,hover=null;
+var state={status:{validated:1,provisional:1,unsanctioned:1,flagged:1},maxLevel:99,iso:false,explode:0,air:true,common:true,ortho:true};
+
+function initScene(){
+  renderer=new THREE.WebGLRenderer({canvas:canvas,antialias:true,alpha:false});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+  renderer.outputEncoding=THREE.sRGBEncoding;
+  scene=new THREE.Scene();
+  camera=new THREE.PerspectiveCamera(42,1,0.5,5000);
+  controls=new THREE.OrbitControls(camera,canvas);
+  controls.enableDamping=!RM;controls.dampingFactor=0.08;controls.maxPolarAngle=Math.PI*0.47;controls.screenSpacePanning=false;
+  scene.add(new THREE.HemisphereLight(0xffffff,0x8a9a96,0.85));
+  var sun=new THREE.DirectionalLight(0xffffff,0.75);sun.position.set(-120,220,140);scene.add(sun);
+  window.addEventListener("resize",resize);resize();
+  (function loop(){requestAnimationFrame(loop);controls.update();renderer.render(scene,camera)})();
+}
+function resize(){var r=canvas.parentElement.getBoundingClientRect();renderer.setSize(r.width,r.height,false);camera.aspect=r.width/Math.max(r.height,1);camera.updateProjectionMatrix()}
+function shapeOf(poly){var s=new THREE.Shape();poly.forEach(function(p,i){i?s.lineTo(p[0],p[1]):s.moveTo(p[0],p[1])});s.closePath();return s}
+
+/* ---------- batched geometry: every unit of a kind shares ONE mesh and ONE edge set, so a ward of
+   10,000 flats is ~8 draw calls instead of 20,000. Visibility, explode and highlight rewrite the
+   shared vertex buffers in place; picking maps the hit triangle back to its unit. ---------- */
+var GROUP_OP={unit:0.93,whole:0.72,common:0.55,air:0.12},batches={},recs=[];
+function groupOf(u){return u.kind==="air_rights"?"air":u.kind==="common"?"common":u.kind==="whole_level"?"whole":"unit"}
+function clearScene(){
+  Object.keys(batches).forEach(function(k){var b=batches[k];scene.remove(b.mesh);scene.remove(b.lines);b.mesh.geometry.dispose();b.lines.geometry.dispose()});
+  parcelObjs.forEach(function(o){scene.remove(o.obj)});batches={};recs=[];parcelObjs=[];if(ground){scene.remove(ground);ground=null}}
+
+function build(){
+  clearScene();
+  var t0=performance.now();
+  var b=D.meta.bounds,w=b[2]-b[0],h=b[3]-b[1],cx=(b[0]+b[2])/2,cy=(b[1]+b[3])/2;
+  var gm=new THREE.MeshLambertMaterial({color:tok("--soft")});
+  ground=new THREE.Mesh(new THREE.PlaneGeometry(w,h),gm);ground.rotation.x=-Math.PI/2;ground.position.set(cx,-0.02,-cy);scene.add(ground);
+  if(D.ortho){var img=new Image();img.onload=function(){var t=new THREE.Texture(img);t.encoding=THREE.sRGBEncoding;t.anisotropy=4;t.needsUpdate=true;ground.userData.tex=t;apply()};img.src=D.ortho}
+  D.parcels.forEach(function(p){
+    var pts=p.poly.map(function(q){return new THREE.Vector3(q[0],0.12,-q[1])});
+    var line=new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:tok("--parcel")}));
+    var pick=new THREE.Mesh(new THREE.ShapeGeometry(shapeOf(p.poly)),new THREE.MeshBasicMaterial({color:tok("--parcel"),transparent:true,opacity:0,depthWrite:false}));
+    pick.rotation.x=-Math.PI/2;pick.position.y=0.06;
+    var g=new THREE.Group();g.add(line);g.add(pick);scene.add(g);
+    parcelObjs.push({obj:g,pick:pick,p:p});
+  });
+  var acc={};
+  D.units.forEach(function(u){
+    if(!u.poly||u.poly.length<3)return;
+    var hgt=Math.max(0.3,(u.z1-u.z0)-(u.kind==="air_rights"?0:0.14));
+    var geo=new THREE.ExtrudeGeometry(shapeOf(u.poly),{depth:hgt,bevelEnabled:false});
+    var ng=geo.index?geo.toNonIndexed():geo,p=ng.attributes.position.array,n=ng.attributes.normal.array;
+    var e=new THREE.EdgesGeometry(geo,25),ep=e.attributes.position.array;
+    var g=groupOf(u),A=acc[g]||(acc[g]={pos:[],nrm:[],epos:[]});
+    var r={u:u,g:g,v0:A.pos.length/3,e0:A.epos.length/3};
+    // ExtrudeGeometry is built in the XY plane with depth along Z; the scene is Y-up: (x,y,z) -> (x,z,-y)
+    for(var i=0;i<p.length;i+=3){A.pos.push(p[i],p[i+2],-p[i+1]);A.nrm.push(n[i],n[i+2],-n[i+1])}
+    for(i=0;i<ep.length;i+=3)A.epos.push(ep[i],ep[i+2],-ep[i+1]);
+    r.v1=A.pos.length/3;r.e1=A.epos.length/3;recs.push(r);
+    geo.dispose();e.dispose();if(ng!==geo)ng.dispose();
+  });
+  Object.keys(acc).forEach(function(g){
+    var A=acc[g],nv=A.pos.length/3,ne=A.epos.length/3;
+    var mg=new THREE.BufferGeometry();
+    mg.setAttribute("position",new THREE.BufferAttribute(new Float32Array(nv*3),3));
+    mg.setAttribute("normal",new THREE.BufferAttribute(new Float32Array(A.nrm),3));
+    mg.setAttribute("color",new THREE.BufferAttribute(new Float32Array(nv*3),3));
+    var lg=new THREE.BufferGeometry();
+    lg.setAttribute("position",new THREE.BufferAttribute(new Float32Array(ne*3),3));
+    lg.setAttribute("color",new THREE.BufferAttribute(new Float32Array(ne*3),3));
+    var air=g==="air";
+    var mesh=new THREE.Mesh(mg,new THREE.MeshLambertMaterial({vertexColors:true,transparent:true,opacity:GROUP_OP[g],depthWrite:!air}));
+    var lines=new THREE.LineSegments(lg,new THREE.LineBasicMaterial({vertexColors:true,transparent:true,opacity:air?0.35:0.5}));
+    scene.add(mesh);scene.add(lines);
+    var owner=new Int32Array(nv/3);
+    batches[g]={mesh:mesh,lines:lines,base:new Float32Array(A.pos),ebase:new Float32Array(A.epos),owner:owner};
+  });
+  recs.forEach(function(r,k){var o=batches[r.g].owner;for(var t=r.v0/3;t<r.v1/3;t++)o[t]=k});
+  var maxL=D.units.reduce(function(m,u){return u.kind==="air_rights"?m:Math.max(m,u.level)},0);
+  var minL=D.units.reduce(function(m,u){return Math.min(m,u.level)},0);
+  $("lvl").min=minL;$("lvl").max=maxL+1;$("lvl").value=maxL+1;state.maxLevel=99;$("lvl-v").textContent="all";
+  state.under=minL<0;
+  paint();frame();apply();
+  window.VIEW_STATS={units:recs.length,meshes:Object.keys(batches).length*2,buildMs:Math.round(performance.now()-t0)};
+  document.body.setAttribute("data-view-stats",JSON.stringify(window.VIEW_STATS));
+}
+function frame(){
+  var b=D.meta.bounds,cx=(b[0]+b[2])/2,cy=(b[1]+b[3])/2,span=Math.max(b[2]-b[0],b[3]-b[1]);
+  controls.target.set(cx,6,-cy);camera.position.set(cx-span*0.42,span*0.62,-cy+span*0.78);controls.update();
+}
+function visible(u){
+  var lv=state.maxLevel,vis;
+  if(u.kind==="air_rights")vis=state.air&&!(lv<90||state.iso);
+  else{vis=u.kind==="common"?state.common&&!!state.status[u.status]:!!state.status[u.status];if(state.iso?u.level!==lv:u.level>lv)vis=false}
+  return vis;
+}
+function place(src,dst,a,b,vis,dy){
+  // hidden units collapse to one point: zero-area triangles are never drawn or picked
+  for(var v=a;v<b;v++){var i=3*v;if(vis){dst[i]=src[i];dst[i+1]=src[i+1]+dy;dst[i+2]=src[i+2]}else{dst[i]=0;dst[i+1]=-1e4;dst[i+2]=0}}
+}
+function apply(){
+  recs.forEach(function(r){
+    var u=r.u,vis=visible(u),dy=u.z0+state.explode*Math.max(u.level,0),B=batches[r.g];r.vis=vis;
+    place(B.base,B.mesh.geometry.attributes.position.array,r.v0,r.v1,vis,dy);
+    place(B.ebase,B.lines.geometry.attributes.position.array,r.e0,r.e1,vis,dy);
+  });
+  Object.keys(batches).forEach(function(k){var B=batches[k];
+    B.mesh.geometry.attributes.position.needsUpdate=true;B.lines.geometry.attributes.position.needsUpdate=true;
+    B.mesh.geometry.computeBoundingSphere();B.lines.geometry.computeBoundingSphere()});
+  if(ground){var tex=state.ortho?ground.userData.tex||null:null;ground.material.map=tex;
+    ground.material.color.set(tex?0xffffff:tok("--soft"));
+    // with underground levels present the ground turns see-through so basements can be seen below it
+    ground.material.transparent=!!state.under;ground.material.opacity=state.under?0.5:1;ground.material.depthWrite=!state.under;
+    ground.material.needsUpdate=true}
+}
+function paint(){
+  var acc=new THREE.Color(tok("--accent")),edge=new THREE.Color(tok("--edge")),c=new THREE.Color();
+  recs.forEach(function(r){
+    var B=batches[r.g],col=B.mesh.geometry.attributes.color.array,ecol=B.lines.geometry.attributes.color.array;
+    c.set(colFor(r.u));if(r.u===sel)c.lerp(acc,0.55);
+    for(var v=r.v0;v<r.v1;v++){col[3*v]=c.r;col[3*v+1]=c.g;col[3*v+2]=c.b}
+    var ec=r.u===sel?acc:edge;
+    for(v=r.e0;v<r.e1;v++){ecol[3*v]=ec.r;ecol[3*v+1]=ec.g;ecol[3*v+2]=ec.b}
+  });
+  Object.keys(batches).forEach(function(k){batches[k].mesh.geometry.attributes.color.needsUpdate=true;batches[k].lines.geometry.attributes.color.needsUpdate=true});
+}
+function recolor(){
+  paint();
+  parcelObjs.forEach(function(o){o.obj.children[0].material.color.set(tok("--parcel"));o.pick.material.color.set(tok("--parcel"))});
+  if(ground&&!ground.material.map)ground.material.color.set(tok("--soft"));
+  scene.background=new THREE.Color(tok("--bg"));
+  drawSummary();
+}
+
+/* ---------- picking ---------- */
+var ray=new THREE.Raycaster(),ndc=new THREE.Vector2(),down=null;
+function hitUnit(groups){
+  var ms=groups.filter(function(g){return batches[g]}).map(function(g){return batches[g].mesh});
+  var h=ray.intersectObjects(ms,false);
+  for(var i=0;i<h.length;i++){var g=groups.find(function(k){return batches[k]&&batches[k].mesh===h[i].object});
+    var r=recs[batches[g].owner[h[i].faceIndex]];if(r&&r.vis)return r.u}
+  return null;
+}
+function pickAt(ev){
+  var r=canvas.getBoundingClientRect();ndc.set(((ev.clientX-r.left)/r.width)*2-1,-((ev.clientY-r.top)/r.height)*2+1);
+  ray.setFromCamera(ndc,camera);
+  var u=hitUnit(["unit","whole","common"]);if(u)return{type:"unit",u:u};
+  u=hitUnit(["air"]);if(u)return{type:"unit",u:u};
+  var ph=ray.intersectObjects(parcelObjs.map(function(o){return o.pick}),false);
+  if(ph.length){var po=parcelObjs.find(function(o){return o.pick===ph[0].object});return{type:"parcel",p:po.p}}
+  return null;
+}
+canvas.addEventListener("pointerdown",function(e){down=[e.clientX,e.clientY]});
+canvas.addEventListener("pointerup",function(e){
+  if(!down||Math.hypot(e.clientX-down[0],e.clientY-down[1])>5)return;
+  var h=pickAt(e);if(!h)return;
+  if(h.type==="unit")selectUnit(h.u,false);else selectParcel(h.p);
+});
+var hoverPending=null;
+canvas.addEventListener("pointermove",function(e){
+  if(e.pointerType!=="mouse"||e.buttons)return;
+  if(hoverPending)return;hoverPending=requestAnimationFrame(function(){hoverPending=null;  // at most one pick per frame
+  var h=pickAt(e),tip=$("tip");
+  if(h&&h.type==="unit"){var r=canvas.getBoundingClientRect();tip.hidden=false;tip.style.left=(e.clientX-r.left)+"px";tip.style.top=(e.clientY-r.top)+"px";
+    tip.innerHTML=esc(h.u.label||h.u.kind)+" · "+esc(levelName(h.u.level))+"<br><b>"+esc(h.u.id||"no ID (flagged)")+"</b>";canvas.style.cursor="pointer"}
+  else if(h&&h.type==="parcel"){var r2=canvas.getBoundingClientRect();tip.hidden=false;tip.style.left=(e.clientX-r2.left)+"px";tip.style.top=(e.clientY-r2.top)+"px";tip.innerHTML="Parcel <b>"+esc(h.p.ulpin)+"</b>";canvas.style.cursor="pointer"}
+  else{tip.hidden=true;canvas.style.cursor=""}});
+});
+canvas.addEventListener("pointerleave",function(){$("tip").hidden=true});
+
+function highlight(u){
+  parcelObjs.forEach(function(o){o.pick.material.opacity=0});
+  paint();
+}
+function flyTo(u){
+  if(!u.poly)return;var cx=0,cy=0;u.poly.forEach(function(p){cx+=p[0];cy+=p[1]});cx/=u.poly.length;cy/=u.poly.length;
+  var zc=u.z0+state.explode*Math.max(u.level,0)+(u.z1-u.z0)/2;
+  var tgt=new THREE.Vector3(cx,zc,-cy),off=camera.position.clone().sub(controls.target).setLength(70),dst=tgt.clone().add(off);
+  if(RM){controls.target.copy(tgt);camera.position.copy(dst);return}
+  var t0=performance.now(),a0=controls.target.clone(),p0=camera.position.clone();
+  (function step(t){var k=Math.min(1,(t-t0)/650),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;controls.target.lerpVectors(a0,tgt,e);camera.position.lerpVectors(p0,dst,e);if(k<1)requestAnimationFrame(step)})(t0);
+}
+
+/* ---------- panel ---------- */
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function fmt(n,d){return n==null||isNaN(n)?"—":Number(n).toLocaleString("en-IN",{maximumFractionDigits:d==null?1:d,minimumFractionDigits:d==null?0:d})}
+function statusPill(s){var m={validated:["Validated","--ok"],provisional:["Provisional","--warn"],unsanctioned:["Unsanctioned","--unsanc"],flagged:["Flagged · no ID","--bad"]}[s]||[s,"--common"];return'<span class="pill" style="background:'+tok(m[1])+'">'+m[0]+"</span>"}
+function idBlock(id,pc,note){
+  if(!id)return'<div class="idbox"><div class="empty">No 3D ULPIN issued: below the confidence threshold. A surveyor must confirm this unit first.</div>'+(note?'<div class="idnote">Candidate if approved: <code>'+esc(note)+"</code></div>":"")+"</div>";
+  var s=splitId(id,pc),lv=unb32(s.level)-544,cls={S:"surface",A:"air-rights",I:"infra"}[s.cls]||s.cls,un=unb32(s.unit);
+  return'<div class="idbox"><div class="segs" aria-label="3D ULPIN '+esc(id)+'">'+
+    '<span class="seg">'+esc(s.parcel)+"<small>parcel</small></span>"+
+    '<span class="seg">'+esc(s.level)+"<small>level</small></span>"+
+    '<span class="seg">'+esc(s.cls)+"<small>class</small></span>"+
+    '<span class="seg">'+esc(s.unit)+"<small>unit</small></span>"+
+    '<span class="seg check">'+esc(s.check)+"<small>check</small></span></div>"+
+    '<div class="idnote">'+esc(s.level)+" = "+esc(levelName(lv))+" · "+esc(s.cls)+" = "+esc(cls)+" · "+esc(s.unit)+" = "+(un===0?"whole level / common":"unit "+un)+". "+
+    (verifyId(id,pc).ok?"Check character verified offline (Luhn mod 36).":"Check character does not verify.")+"</div></div>";
+}
+function selectUnit(u,fly){
+  sel=u;highlight(u);if(fly)flyTo(u);
+  var pc=D.meta.parcel_chars||12,h=u.z1-u.z0;
+  var name=u.kind==="air_rights"?"Air rights above roof":u.kind==="whole_level"?(u.status==="unsanctioned"?"Unsanctioned floor":"Whole level")+" · "+levelName(u.level):(u.label||"Unit");
+  var rows=[["Level",levelName(u.level)],["Storey height",fmt(h,2)+" m"],["Elevation",fmt(u.zabs[0],2)+" – "+fmt(u.zabs[1],2)+" m"]];
+  if(u.carpet!=null)rows.push(["Carpet area",fmt(u.carpet,1)+" m² · "+fmt(u.carpet*10.7639,0)+" sq ft"]);
+  else rows.push(["Floor area",fmt(u.area,1)+" m²"]);
+  rows.push(["Volume",fmt(u.vol,0)+" m³"]);
+  if(u.bhk)rows.push(["Type",u.bhk+" BHK"]);
+  rows.push(["Building",u.bid],["Parcel",u.parcel],["Source",{sanctioned_plan:"sanctioned plan + LiDAR",lidar:"LiDAR only",zoning:"zoning limit"}[u.source]||u.source||"—"]);
+  var own=u.kind==="unit"?(u.owner?'<dl class="kv"><dt>Owner</dt><dd>'+esc(u.owner)+"</dd><dt>Share</dt><dd>"+esc(u.share)+" %</dd><dt>Right</dt><dd>"+esc(u.right||"—")+"</dd><dt>Document</dt><dd>"+esc(u.doc||"—")+"</dd></dl>":'<div class="empty">Owner not on record for this flat.</div>'):"";
+  $("detail").innerHTML='<div class="card"><div class="title-row"><div><div class="eyebrow">Selected unit</div><h2>'+esc(name)+"</h2></div>"+statusPill(u.status)+"</div>"+
+    idBlock(u.id,pc,u.cand)+
+    (u.id?'<div style="display:flex;gap:8px"><button class="btn ghost" id="copy">Copy 3D ULPIN</button><a class="btn ghost" style="text-decoration:none" target="_blank" rel="noopener" href="../cards/'+encodeURIComponent(u.id)+'.html">Property card</a><span id="copied" class="empty" aria-live="polite"></span></div>':"")+
+    '<dl class="kv">'+rows.map(function(r){return"<dt>"+esc(r[0])+"</dt><dd>"+esc(r[1])+"</dd>"}).join("")+"</dl>"+
+    (own?'<div class="eyebrow">Record of rights</div>'+own:"")+
+    '<div><div class="eyebrow" style="display:flex;justify-content:space-between"><span>Confidence</span><span>'+fmt(u.conf*100,0)+' %</span></div><div class="meter" style="margin-top:6px"><i style="width:'+Math.round(u.conf*100)+'%"></i></div></div>'+
+    (u.issues&&u.issues.length?'<div class="eyebrow">Findings</div><ul class="issues">'+u.issues.map(function(i){return"<li>"+esc(i)+"</li>"}).join("")+"</ul>":"")+"</div>";
+  var cp=$("copy");if(cp)cp.onclick=function(){var t=u.id;(navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(t):Promise.reject()).then(function(){$("copied").textContent="Copied"},function(){$("copied").textContent=t})};
+}
+function selectParcel(p){
+  sel=null;highlight(null);
+  parcelObjs.forEach(function(o){o.pick.material.opacity=o.p===p?0.22:0});
+  var bs=D.buildings.filter(function(b){return b.parcel===p.ulpin});
+  var us=D.units.filter(function(u){return u.parcel===p.ulpin});
+  var ids=us.filter(function(u){return u.id}).length;
+  $("detail").innerHTML='<div class="card"><div><div class="eyebrow">Selected parcel</div><h2 style="font:600 17px var(--f-id);margin:2px 0 0">'+esc(p.ulpin)+"</h2></div>"+
+    '<dl class="kv"><dt>Plot area</dt><dd>'+fmt(p.area,0)+" m²</dd><dt>Buildings</dt><dd>"+bs.length+"</dd><dt>3D units</dt><dd>"+us.length+"</dd><dt>3D ULPINs issued</dt><dd>"+ids+"</dd></dl>"+
+    (bs.length?'<ul class="list">'+bs.map(function(b){return'<li><button data-b="'+esc(b.id)+'"><span class="dot" style="background:'+tok(b.encroach>0?"--bad":"--accent")+'"></span><span>'+esc(b.id)+" · "+(b.floors?b.floors+" floors":"height unknown")+"<small>"+esc(b.issues||"no findings")+"</small></span></button></li>"}).join("")+"</ul>":'<div class="empty">Open plot: no buildings found.</div>')+"</div>";
+  $("detail").querySelectorAll("button[data-b]").forEach(function(btn){btn.onclick=function(){var u=D.units.filter(function(x){return x.bid===btn.dataset.b&&x.kind!=="air_rights"}).sort(function(a,b){return a.level-b.level})[0];if(u)selectUnit(u,true)}});
+}
+function drawSummary(){
+  var t=D.meta.totals||{},us=D.units;
+  $("area-name").textContent=D.meta.name||"Area";
+  $("meta-row").innerHTML=(D.meta.synthetic?'<span class="tag synth">Synthetic demo data</span>':"")+'<span class="tag">Data grade '+esc(D.meta.grade||"—")+'</span><span class="tag">'+esc(D.meta.crs)+"</span>";
+  $("src").textContent="Building outlines: "+(D.meta.building_source||"—");
+  $("stats").innerHTML=[["Buildings",D.buildings.length],["3D units",us.length],["IDs issued",us.filter(function(u){return u.id}).length]].map(function(s){return'<div class="stat"><b>'+fmt(s[1],0)+"</b><span>"+s[0]+"</span></div>"}).join("");
+  var cnt={};us.forEach(function(u){cnt[u.status]=(cnt[u.status]||0)+1});
+  $("bar").innerHTML=STATUS.map(function(s){return cnt[s[0]]?'<i title="'+s[1]+": "+cnt[s[0]]+'" style="width:'+(100*cnt[s[0]]/us.length)+"%;background:"+tok(s[2])+'"></i>':""}).join("");
+  $("chips").innerHTML=STATUS.map(function(s){return'<button class="chip" data-s="'+s[0]+'" aria-pressed="'+(state.status[s[0]]?"true":"false")+'"><span class="dot" style="background:'+tok(s[2])+'"></span>'+s[1]+" · "+(cnt[s[0]]||0)+"</button>"}).join("");
+  $("chips").querySelectorAll(".chip").forEach(function(c){c.onclick=function(){var k=c.dataset.s;state.status[k]=state.status[k]?0:1;c.setAttribute("aria-pressed",state.status[k]?"true":"false");apply()}});
+  $("legend").innerHTML=[["Common area","--common"],["Air rights","--air"],["Parcel boundary","--parcel"]].map(function(l){return'<span><i style="background:'+tok(l[1])+';outline:1px solid '+tok("--line")+'"></i>'+l[0]+"</span>"}).join("");
+  var attn=[];
+  us.filter(function(u){return u.status==="unsanctioned"}).forEach(function(u){attn.push({u:u,c:"--unsanc",t:"Unsanctioned floor · "+levelName(u.level),s:u.bid+" on "+u.parcel})});
+  D.buildings.filter(function(b){return b.encroach>0}).forEach(function(b){var u=us.filter(function(x){return x.bid===b.id&&x.kind!=="air_rights"})[0];if(u)attn.push({u:u,c:"--bad",t:"Encroachment · "+fmt(b.encroach,1)+" m² over boundary",s:b.id+" on "+b.parcel})});
+  us.filter(function(u){return u.status==="flagged"}).forEach(function(u){attn.push({u:u,c:"--bad",t:(u.label||u.kind)+" · flagged, no ID",s:"confidence "+Math.round(u.conf*100)+" % (IDs need 60 %) · "+u.bid})});
+  $("attn").innerHTML=attn.length?attn.slice(0,40).map(function(a,i){return'<li><button data-i="'+i+'"><span class="dot" style="background:'+tok(a.c)+'"></span><span>'+esc(a.t)+"<small>"+esc(a.s)+"</small></span></button></li>"}).join(""):'<li class="empty">Nothing needs attention.</li>';
+  $("attn").querySelectorAll("button").forEach(function(b){b.onclick=function(){selectUnit(attn[+b.dataset.i].u,true)}});
+  var touch=window.matchMedia&&matchMedia("(pointer: coarse)").matches;
+  $("hud").innerHTML="<span>"+(touch?"Drag to orbit · two fingers to pan and zoom · tap a flat or a plot":"Drag to orbit · right-drag to pan · scroll to zoom · click a flat or a plot")+"</span>";
+}
+function defaultDetail(){
+  var first=D.units.filter(function(u){return u.kind==="unit"&&u.id}).sort(function(a,b){return b.level-a.level})[0];
+  if(first)selectUnit(first,false);else $("detail").innerHTML='<div class="empty">Click a flat or a plot in the 3D view.</div>';
+}
+
+/* ---------- controls ---------- */
+$("lvl").addEventListener("input",function(e){var v=+e.target.value,m=+e.target.max;state.maxLevel=v>=m&&!state.iso?99:v;$("lvl-v").textContent=state.maxLevel>90?"all":levelName(v);apply()});
+$("exp").addEventListener("input",function(e){state.explode=+e.target.value;$("exp-v").textContent=state.explode+" m";apply()});
+$("t-iso").addEventListener("change",function(e){state.iso=e.target.checked;var l=$("lvl");if(state.iso&&+l.value>=+l.max){l.value=1}l.dispatchEvent(new Event("input"))});
+$("t-air").addEventListener("change",function(e){state.air=e.target.checked;apply()});
+$("t-common").addEventListener("change",function(e){state.common=e.target.checked;apply()});
+$("t-ortho").addEventListener("change",function(e){state.ortho=e.target.checked;apply()});
+function search(){
+  var q=$("q").value.trim().toUpperCase();if(!q)return;var qn=q.replace(/[^0-9A-Z]/g,"");
+  var hit=D.units.find(function(u){return u.id&&u.id===qn})||D.units.find(function(u){return u.cand===qn})||
+    D.units.find(function(u){return(u.label||"").toUpperCase()===q})||D.units.find(function(u){return u.owner&&u.owner.toUpperCase().indexOf(q)>=0})||
+    D.units.find(function(u){return(u.label||"").toUpperCase().indexOf(q)>=0});
+  if(hit){selectUnit(hit,true)}else{$("detail").innerHTML='<div class="empty">Nothing matches “'+esc($("q").value)+'”. Try a full 3D ULPIN, a flat label such as FLAT 402, or an owner’s name.</div>'}
+}
+$("qgo").onclick=search;$("q").addEventListener("keydown",function(e){if(e.key==="Enter")search()});
+function verify(){var r=verifyId($("vin").value,D?D.meta.parcel_chars||12:12);
+  if(!r.ok){$("vout").innerHTML='<span class="bad">Invalid.</span> '+esc(r.why);return}
+  var u=D&&D.units.find(function(x){return x.id===r.t});
+  $("vout").innerHTML='<span class="ok">Valid format and check character.</span> '+(u?"Registered here: "+esc(u.label||u.kind)+" in "+esc(u.bid)+".":"Not registered in this area.");
+  if(u)selectUnit(u,true)}
+$("vgo").onclick=verify;$("vin").addEventListener("keydown",function(e){if(e.key==="Enter")verify()});
+$("file").addEventListener("change",function(e){var f=e.target.files[0];if(!f)return;var rd=new FileReader();rd.onload=function(){try{D=JSON.parse(rd.result);start()}catch(err){$("vout").innerHTML='<span class="bad">That file is not a cadastre_view.json.</span>'}};rd.readAsText(f)});
+
+function start(){if(!renderer)initScene();scene.background=new THREE.Color(tok("--bg"));build();drawSummary();defaultDetail()}
+if(D&&window.THREE){start();
+  var mq=window.matchMedia&&matchMedia("(prefers-color-scheme: dark)");if(mq&&mq.addEventListener)mq.addEventListener("change",recolor);
+  new MutationObserver(recolor).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+}else if(!window.THREE){$("stage").innerHTML='<div class="err">The 3D library could not load. Check the internet connection and reload.</div>'}
+})();
+</script>
+</body>
+</html>

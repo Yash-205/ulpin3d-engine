@@ -1,0 +1,13 @@
+{
+  "gsd": 0.15,
+  "tile": 512,
+  "postprocess": {
+    "mask_thr": 0.5,
+    "seed_thr": 0.55,
+    "min_area_m2": 6.0,
+    "conf_validated": 0.85,
+    "conf_provisional": 0.6
+  },
+  "source_checkpoint": "runs/footprint_stage2_india/best.pt",
+  "quantized": false
+}

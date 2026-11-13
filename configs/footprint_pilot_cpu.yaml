@@ -1,0 +1,22 @@
+# CPU pilot on a small slice of the real data (Africa + Bangladesh + Nepal + India).
+# Proves the real-data path end to end; NOT the competition model (use stage1/stage2 on GPU).
+data:
+  chips_root: data/footprint/chips_pilot
+  gsd: 0.15
+  chip_px: 512
+  crop_px: 256
+  train_filter: {split: [train]}
+  val_filter: {split: [val]}
+  max_val_chips: 120
+  sample_by: region
+  sample_weights: {africa: 1.0, south_asia: 1.0, india: 1.5}
+model: {arch: Unet, encoder: resnet34, encoder_weights: imagenet}
+train:
+  out_dir: runs/footprint_pilot_cpu
+  epochs: 12
+  steps_per_epoch: 40
+  batch_size: 8
+  val_batch_size: 8
+  lr: 0.0006
+  num_workers: 2
+  select_metric: obj_f1

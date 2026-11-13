@@ -1,0 +1,32 @@
+# Stage 2: fine-tune on India (OAM drone scenes), starting from the stage-1 model.
+# Lower LR + 3 frozen-encoder epochs so the decoder adapts first.
+data:
+  chips_root: data/footprint/chips
+  gsd: 0.15
+  chip_px: 512
+  crop_px: 512
+  train_filter: {split: [train], region: [india, south_asia]}
+  val_filter: {split: [val], region: [india]}
+  max_val_chips: 600
+  sample_by: region
+  sample_weights: {india: 3.0, south_asia: 1.0}   # mostly India, some replay to avoid forgetting
+  aug_strength: strong
+model:
+  arch: Unet
+  encoder: efficientnet-b4
+  encoder_weights: imagenet
+train:
+  out_dir: runs/footprint_stage2_india
+  init_checkpoint: runs/footprint_stage1/best.pt
+  epochs: 20
+  steps_per_epoch: 300
+  batch_size: 12
+  lr: 0.0001
+  encoder_lr_mult: 0.3
+  freeze_encoder_epochs: 3
+  num_workers: 4
+  amp: true
+  select_metric: obj_f1
+  early_stop_patience: 6
+loss: {w_building: 1.0, w_dice: 1.0, w_boundary: 1.0, boundary_pos_weight: 3.0}
+postprocess: {mask_thr: 0.5, seed_thr: 0.55, min_area_m2: 6.0, conf_validated: 0.85, conf_provisional: 0.60}

@@ -1,0 +1,8 @@
+[run-area] area 'Sangam Vihar, Delhi · drone image only (outlines from our model)' grade C; missing: ['lidar', 'parcels', 'plans', 'ownership']
+[infer] block (0,0) -> 80 buildings so far
+[infer] 80 buildings -> examples/results/sangam_vihar_delhi/1_drone_only/work/footprints  status counts: {'provisional': 65, 'flagged': 15}
+[run-area] 80 buildings from orthophoto model footprint_india.onnx
+[run-area] 0 property cards -> examples/results/sangam_vihar_delhi/1_drone_only/cards/index.html
+[run-area] indexed register (SQLite, 3D R-tree) -> examples/results/sangam_vihar_delhi/1_drone_only/register.sqlite
+[run-area] done in 22.0 s: 80 buildings, 80 units, 0 IDs issued {'flagged': 80}
+[run-area] open examples/results/sangam_vihar_delhi/1_drone_only/viewer/index.html in a browser

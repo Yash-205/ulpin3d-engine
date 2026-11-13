@@ -1,0 +1,9 @@
+[run-area] area 'Delft city centre, Netherlands · official building outlines (BAG) + LiDAR + parcels (the municipal update case)' grade B; missing: ['plans', 'ownership']
+[run-area] 191 buildings from outlines file footprints/bag_buildings.geojson
+/opt/anaconda3/envs/ulpin3d/lib/python3.11/site-packages/rasterio/features.py:129: RuntimeWarning: DeprecationWarning: 'Memory' driver is deprecated since GDAL 3.11. Use 'MEM' onwards. Further messages of this type will be suppressed.
+  yield from _shapes(source, mask, connectivity, transform)
+[run-area] 4 outlines spanned several plots and were split along plot lines -> 207 buildings
+[run-area] 367 property cards -> examples/results/delft_apartments/4_city_outlines_lidar/cards/index.html
+[run-area] indexed register (SQLite, 3D R-tree) -> examples/results/delft_apartments/4_city_outlines_lidar/register.sqlite
+[run-area] done in 52.9 s: 207 buildings, 391 units, 367 IDs issued {'provisional': 367, 'flagged': 24}
+[run-area] open examples/results/delft_apartments/4_city_outlines_lidar/viewer/index.html in a browser

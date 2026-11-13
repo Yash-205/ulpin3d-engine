@@ -1,0 +1,259 @@
+[
+ {
+  "area": "bkc_mumbai",
+  "title": "Bandra Kurla Complex, Mumbai \u00b7 real OpenStreetMap outlines",
+  "inputs": [
+   "footprints"
+  ],
+  "model": null,
+  "seconds": 4.0,
+  "ok_run": true,
+  "totals": {
+   "buildings": 204,
+   "units": 266,
+   "ids_issued": 69,
+   "by_status": {
+    "flagged": 197,
+    "provisional": 69
+   }
+  },
+  "grade": "C",
+  "verdict": "RAN"
+ },
+ {
+  "area": "delft_apartments/1_drone_lidar",
+  "title": "Delft city centre, Netherlands \u00b7 aerial photo + LiDAR + parcels (outlines from our image model, checked against LiDAR)",
+  "inputs": [
+   "ortho",
+   "lidar",
+   "parcels"
+  ],
+  "model": "models/footprint_india.onnx",
+  "seconds": 85.4,
+  "ok_run": true,
+  "totals": {
+   "buildings": 158,
+   "units": 497,
+   "ids_issued": 402,
+   "by_status": {
+    "flagged": 95,
+    "provisional": 402
+   }
+  },
+  "grade": "B",
+  "outline_vs_truth": {
+   "iou": 0.536,
+   "precision": 0.833,
+   "recall": 0.6,
+   "buildings": 158
+  },
+  "verdict": "RAN"
+ },
+ {
+  "area": "delft_apartments/2_lidar_only",
+  "title": "Delft city centre, Netherlands \u00b7 LiDAR + parcels (outlines from the point cloud)",
+  "inputs": [
+   "lidar",
+   "parcels"
+  ],
+  "model": null,
+  "seconds": 64.5,
+  "ok_run": true,
+  "totals": {
+   "buildings": 221,
+   "units": 484,
+   "ids_issued": 484,
+   "by_status": {
+    "provisional": 484
+   }
+  },
+  "grade": "B",
+  "outline_vs_truth": {
+   "iou": 0.541,
+   "precision": 0.84,
+   "recall": 0.603,
+   "buildings": 221
+  },
+  "verdict": "RAN"
+ },
+ {
+  "area": "delft_apartments/3_drone_only",
+  "title": "Delft city centre, Netherlands \u00b7 aerial photo + parcels (outlines from our image model, no heights)",
+  "inputs": [
+   "ortho",
+   "parcels"
+  ],
+  "model": "models/footprint_india.onnx",
+  "seconds": 25.0,
+  "ok_run": true,
+  "totals": {
+   "buildings": 158,
+   "units": 158,
+   "ids_issued": 0,
+   "by_status": {
+    "flagged": 158
+   }
+  },
+  "grade": "C",
+  "outline_vs_truth": {
+   "iou": 0.475,
+   "precision": 0.739,
+   "recall": 0.571,
+   "buildings": 158
+  },
+  "verdict": "RAN"
+ },
+ {
+  "area": "delft_apartments/4_city_outlines_lidar",
+  "title": "Delft city centre, Netherlands \u00b7 official building outlines (BAG) + LiDAR + parcels (the municipal update case)",
+  "inputs": [
+   "ortho",
+   "lidar",
+   "parcels",
+   "footprints"
+  ],
+  "model": null,
+  "seconds": 57.0,
+  "ok_run": true,
+  "totals": {
+   "buildings": 207,
+   "units": 391,
+   "ids_issued": 367,
+   "by_status": {
+    "provisional": 367,
+    "flagged": 24
+   }
+  },
+  "grade": "B",
+  "outline_vs_truth": {
+   "iou": 1.0,
+   "precision": 1.0,
+   "recall": 1.0,
+   "buildings": 207
+  },
+  "verdict": "RAN"
+ },
+ {
+  "area": "sangam_vihar_delhi/1_drone_only",
+  "title": "Sangam Vihar, Delhi \u00b7 drone image only (outlines from our model)",
+  "inputs": [
+   "ortho"
+  ],
+  "model": "models/footprint_india.onnx",
+  "seconds": 24.8,
+  "ok_run": true,
+  "totals": {
+   "buildings": 80,
+   "units": 80,
+   "ids_issued": 0,
+   "by_status": {
+    "flagged": 80
+   }
+  },
+  "grade": "C",
+  "verdict": "RAN"
+ },
+ {
+  "area": "sangam_vihar_delhi/2_open_outlines",
+  "title": "Sangam Vihar, Delhi \u00b7 drone image + open building outlines (Google/Microsoft, used as the city's outline layer)",
+  "inputs": [
+   "ortho",
+   "footprints"
+  ],
+  "model": null,
+  "seconds": 4.3,
+  "ok_run": true,
+  "totals": {
+   "buildings": 108,
+   "units": 108,
+   "ids_issued": 83,
+   "by_status": {
+    "provisional": 83,
+    "flagged": 25
+   }
+  },
+  "grade": "C",
+  "verdict": "RAN"
+ },
+ {
+  "area": "saopaulo_paraisopolis/1_drone_lidar",
+  "title": "S\u00e3o Paulo Parais\u00f3polis \u00b7 drone image + LiDAR (outlines from image + LiDAR height model)",
+  "inputs": [
+   "ortho",
+   "lidar"
+  ],
+  "model": "models/footprint_lite_height",
+  "seconds": 78.6,
+  "ok_run": true,
+  "totals": {
+   "buildings": 472,
+   "units": 992,
+   "ids_issued": 709,
+   "by_status": {
+    "flagged": 283,
+    "provisional": 709
+   }
+  },
+  "grade": "B",
+  "outline_vs_truth": {
+   "iou": 0.81,
+   "precision": 0.906,
+   "recall": 0.885,
+   "buildings": 472
+  },
+  "verdict": "RAN"
+ },
+ {
+  "area": "saopaulo_paraisopolis/2_lidar_only",
+  "title": "S\u00e3o Paulo Parais\u00f3polis \u00b7 LiDAR only (outlines from the classified point cloud)",
+  "inputs": [
+   "lidar"
+  ],
+  "model": null,
+  "seconds": 44.6,
+  "ok_run": true,
+  "totals": {
+   "buildings": 221,
+   "units": 440,
+   "ids_issued": 424,
+   "by_status": {
+    "provisional": 424,
+    "flagged": 16
+   }
+  },
+  "grade": "B",
+  "outline_vs_truth": {
+   "iou": 0.82,
+   "precision": 0.922,
+   "recall": 0.881,
+   "buildings": 221
+  },
+  "verdict": "RAN"
+ },
+ {
+  "area": "saopaulo_paraisopolis/3_drone_only",
+  "title": "S\u00e3o Paulo Parais\u00f3polis \u00b7 drone image only (outlines from our image model, no heights)",
+  "inputs": [
+   "ortho"
+  ],
+  "model": "models/footprint_india.onnx",
+  "seconds": 24.8,
+  "ok_run": true,
+  "totals": {
+   "buildings": 106,
+   "units": 106,
+   "ids_issued": 0,
+   "by_status": {
+    "flagged": 106
+   }
+  },
+  "grade": "C",
+  "outline_vs_truth": {
+   "iou": 0.686,
+   "precision": 0.859,
+   "recall": 0.773,
+   "buildings": 106
+  },
+  "verdict": "RAN"
+ }
+]

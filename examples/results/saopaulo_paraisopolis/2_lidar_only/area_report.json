@@ -1,0 +1,61 @@
+{
+  "area": "/var/folders/nz/y0jh8s152dz7ppt4j_mvccs00000gn/T/ulpin3d_scenarios_mjlt33_e/saopaulo_paraisopolis/2_lidar_only",
+  "name": "S\u00e3o Paulo Parais\u00f3polis \u00b7 LiDAR only (outlines from the classified point cloud)",
+  "lidar": {
+    "file": "cloud.laz",
+    "points": 1048408,
+    "density_pts_m2": 16.8,
+    "rgb": true
+  },
+  "parcels": [],
+  "plans": [],
+  "ownership": "no ownership records supplied",
+  "data_grade": "B",
+  "missing": [
+    "ortho",
+    "parcels",
+    "plans",
+    "ownership"
+  ],
+  "lidar_classification": {
+    "model": "models/pointcloud/model.txt",
+    "seconds": 28.6,
+    "counts": {
+      "ground": 309766,
+      "building": 460563,
+      "vegetation": 178394,
+      "other": 99685
+    },
+    "mean_confidence": 0.878
+  },
+  "buildings": {
+    "source": "LiDAR building points (no orthophoto model given)",
+    "count": 221,
+    "with_lidar_height": 209
+  },
+  "plan_outlines": {
+    "buildings_following_plan": 0,
+    "possible_extensions": 0
+  },
+  "checks": {
+    "overlapping_unit_pairs": 0,
+    "bad_storey_heights": 0,
+    "anomaly_outliers": 0
+  },
+  "seconds": 39.8,
+  "crs": "EPSG:31983",
+  "totals": {
+    "buildings": 221,
+    "units": 440,
+    "ids_issued": 424,
+    "by_status": {
+      "provisional": 424,
+      "flagged": 16
+    },
+    "by_kind": {
+      "whole_level": 440
+    },
+    "unsanctioned_floors": [],
+    "encroachments": []
+  }
+}

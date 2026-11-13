@@ -1,0 +1,9 @@
+[run-area] area 'Delft city centre, Netherlands · LiDAR + parcels (outlines from the point cloud)' grade B; missing: ['ortho', 'plans', 'ownership']
+Warning 1: DeprecationWarning: 'Memory' driver is deprecated since GDAL 3.11. Use 'MEM' onwards. Further messages of this type will be suppressed.
+[run-area] 134 buildings from LiDAR building points (no orthophoto model given)
+[run-area] 18 outlines spanned several plots and were split along plot lines -> 221 buildings
+[run-area] 50 photo outlines corrected with the LiDAR roof
+[run-area] 484 property cards -> examples/results/delft_apartments/2_lidar_only/cards/index.html
+[run-area] indexed register (SQLite, 3D R-tree) -> examples/results/delft_apartments/2_lidar_only/register.sqlite
+[run-area] done in 58.9 s: 221 buildings, 484 units, 484 IDs issued {'provisional': 484}
+[run-area] open examples/results/delft_apartments/2_lidar_only/viewer/index.html in a browser

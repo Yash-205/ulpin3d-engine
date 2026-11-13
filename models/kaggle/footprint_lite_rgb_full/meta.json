@@ -1,0 +1,55 @@
+{
+  "type": "footprint_lite",
+  "work_gsd": 0.3,
+  "features": [
+    "r",
+    "g",
+    "b",
+    "gray",
+    "sat",
+    "exg",
+    "r_b",
+    "gray_m3",
+    "gray_s3",
+    "gray_rel3",
+    "exg_m3",
+    "sat_m3",
+    "grad_m3",
+    "lap_m3",
+    "gray_m9",
+    "gray_s9",
+    "gray_rel9",
+    "exg_m9",
+    "sat_m9",
+    "grad_m9",
+    "lap_m9",
+    "gray_m25",
+    "gray_s25",
+    "gray_rel25",
+    "exg_m25",
+    "sat_m25",
+    "grad_m25",
+    "lap_m25",
+    "grad",
+    "gray_range9"
+  ],
+  "uses_height": false,
+  "train_pixels": 11008284,
+  "train_seconds": 1147.5,
+  "val": {
+    "building": {
+      "val_accuracy": 0.6950078675955847,
+      "rounds": 400
+    },
+    "boundary": {
+      "val_accuracy": 0.696264503751295,
+      "rounds": 400
+    }
+  },
+  "postprocess": {
+    "mask_thr": 0.5,
+    "seed_thr": 0.45,
+    "min_seed_px": 4,
+    "min_area_m2": 6.0
+  }
+}

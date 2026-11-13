@@ -1,0 +1,8 @@
+[run-area] area 'São Paulo Paraisópolis · drone image only (outlines from our image model, no heights)' grade C; missing: ['lidar', 'parcels', 'plans', 'ownership']
+[infer] block (0,0) -> 106 buildings so far
+[infer] 106 buildings -> examples/results/saopaulo_paraisopolis/3_drone_only/work/footprints  status counts: {'provisional': 54, 'flagged': 52}
+[run-area] 106 buildings from orthophoto model footprint_india.onnx
+[run-area] 0 property cards -> examples/results/saopaulo_paraisopolis/3_drone_only/cards/index.html
+[run-area] indexed register (SQLite, 3D R-tree) -> examples/results/saopaulo_paraisopolis/3_drone_only/register.sqlite
+[run-area] done in 22.2 s: 106 buildings, 106 units, 0 IDs issued {'flagged': 106}
+[run-area] open examples/results/saopaulo_paraisopolis/3_drone_only/viewer/index.html in a browser

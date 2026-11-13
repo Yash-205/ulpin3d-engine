@@ -1,0 +1,16 @@
+{
+  "overall_accuracy": 0.880245049383572,
+  "mean_iou": 0.7487788697125064,
+  "iou_ground": 0.8568420968368136,
+  "iou_building": 0.7533537743379152,
+  "iou_vegetation": 0.8761986445825483,
+  "iou_other": 0.5087209630927485,
+  "precision_ground": 0.9705052996164691,
+  "precision_building": 0.8379972077985696,
+  "precision_vegetation": 0.9239608276311986,
+  "precision_other": 0.6198385808335399,
+  "recall_ground": 0.8797511270378118,
+  "recall_building": 0.8817749542537563,
+  "recall_vegetation": 0.9442899679513892,
+  "recall_other": 0.7394311815060053
+}

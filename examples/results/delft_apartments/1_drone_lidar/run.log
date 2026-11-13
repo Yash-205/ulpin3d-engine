@@ -1,0 +1,10 @@
+[run-area] area 'Delft city centre, Netherlands · aerial photo + LiDAR + parcels (outlines from our image model, checked against LiDAR)' grade B; missing: ['plans', 'ownership']
+[infer] block (0,0) -> 92 buildings so far
+[infer] 92 buildings -> examples/results/delft_apartments/1_drone_lidar/work/footprints  status counts: {'provisional': 49, 'flagged': 43}
+[run-area] 92 buildings from orthophoto model footprint_india.onnx
+[run-area] 31 outlines spanned several plots and were split along plot lines -> 158 buildings
+[run-area] 117 photo outlines corrected with the LiDAR roof
+[run-area] 402 property cards -> examples/results/delft_apartments/1_drone_lidar/cards/index.html
+[run-area] indexed register (SQLite, 3D R-tree) -> examples/results/delft_apartments/1_drone_lidar/register.sqlite
+[run-area] done in 79.6 s: 158 buildings, 497 units, 402 IDs issued {'flagged': 95, 'provisional': 402}
+[run-area] open examples/results/delft_apartments/1_drone_lidar/viewer/index.html in a browser

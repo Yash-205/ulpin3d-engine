@@ -1,0 +1,12 @@
+data/
+runs/
+reports/
+out/
+*.laz
+*.las
+*.tif
+__pycache__/
+*.egg-info/
+.pytest_cache/
+test_runs/
+dist/

@@ -1,0 +1,30 @@
+# Stage 1: pretrain on look-alike regions (African + South Asian drone imagery)
+data:
+  chips_root: data/footprint/chips
+  gsd: 0.15
+  chip_px: 512
+  crop_px: 512
+  train_filter: {split: [train], region: [africa, south_asia]}
+  val_filter: {split: [val], region: [south_asia]}
+  max_val_chips: 600
+  sample_by: region
+  sample_weights: {africa: 1.0, south_asia: 1.5}
+  aug_strength: strong
+model:
+  arch: Unet
+  encoder: efficientnet-b4
+  encoder_weights: imagenet
+train:
+  out_dir: runs/footprint_stage1
+  epochs: 40
+  steps_per_epoch: 500
+  batch_size: 12            # T4/P100 16 GB with AMP; lower to 6 on 8 GB GPUs
+  lr: 0.0003
+  weight_decay: 0.0001
+  warmup_frac: 0.03
+  num_workers: 4
+  amp: true
+  select_metric: obj_f1
+  early_stop_patience: 8
+loss: {w_building: 1.0, w_dice: 1.0, w_boundary: 1.0, boundary_pos_weight: 3.0}
+postprocess: {mask_thr: 0.5, seed_thr: 0.55, min_area_m2: 6.0, conf_validated: 0.85, conf_provisional: 0.60}

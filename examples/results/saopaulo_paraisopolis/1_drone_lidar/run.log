@@ -1,0 +1,9 @@
+[run-area] area 'São Paulo Paraisópolis · drone image + LiDAR (outlines from image + LiDAR height model)' grade B; missing: ['parcels', 'plans', 'ownership']
+[infer] block (0,0) -> 472 buildings so far
+[infer] 472 buildings -> examples/results/saopaulo_paraisopolis/1_drone_lidar/work/footprints  status counts: {'provisional': 302, 'flagged': 167, 'validated': 3}
+[run-area] 472 buildings from orthophoto model footprint_lite_height + LiDAR height
+[run-area] 218 photo outlines corrected with the LiDAR roof
+[run-area] 709 property cards -> examples/results/saopaulo_paraisopolis/1_drone_lidar/cards/index.html
+[run-area] indexed register (SQLite, 3D R-tree) -> examples/results/saopaulo_paraisopolis/1_drone_lidar/register.sqlite
+[run-area] done in 71.8 s: 472 buildings, 992 units, 709 IDs issued {'flagged': 283, 'provisional': 709}
+[run-area] open examples/results/saopaulo_paraisopolis/1_drone_lidar/viewer/index.html in a browser

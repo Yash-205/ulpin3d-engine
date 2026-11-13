@@ -1,0 +1,27 @@
+name: Delft city centre, Netherlands · real aerial + LiDAR + cadastre + building register
+synthetic: false
+parcel_chars: 14
+parcel_id_field: ulpin
+source:
+  ortho: PDOK Luchtfoto RGB 8 cm (Beeldmateriaal Nederland), CC-BY 4.0
+  lidar: AHN4 (Rijkswaterstaat / Het Waterschapshuis) via TU Delft GeoTiles, CC0
+  parcels: Kadaster, Kadastrale Kaart (BRK), CC-BY 4.0
+  reference: BAG buildings + units (Kadaster), CC0
+reference: reference/ = BAG register (official building outlines + every registered apartment with address and floor area); truth/ = BAG outlines rasterised, used only to score our outlines
+# one run per combination of the data this block really has (sanctioned plans and owners are not open in NL)
+scenarios:
+  1_drone_lidar:
+    title: aerial photo + LiDAR + parcels (outlines from our image model, checked against LiDAR)
+    inputs: [ortho, lidar, parcels]
+    footprint_model: models/footprint_india.onnx
+  2_lidar_only:
+    title: LiDAR + parcels (outlines from the point cloud)
+    inputs: [lidar, parcels]
+  3_drone_only:
+    title: aerial photo + parcels (outlines from our image model, no heights)
+    inputs: [ortho, parcels]
+    footprint_model: models/footprint_india.onnx
+  4_city_outlines_lidar:
+    title: official building outlines (BAG) + LiDAR + parcels (the municipal update case)
+    inputs: [ortho, lidar, parcels, footprints]
+    footprints_from: reference

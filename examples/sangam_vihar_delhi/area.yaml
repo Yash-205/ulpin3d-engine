@@ -1,0 +1,16 @@
+name: Sangam Vihar, Delhi · real drone image
+synthetic: false
+parcel_chars: 12
+source:
+  imagery: OpenAerialMap, Lakshyajeet Jalal, CC-BY 4.0
+  outlines: reference/ = Google/Microsoft Open Buildings (VIDA)
+# one run per combination of the data this area really has (no LiDAR / plans / parcels / owners exist for it)
+scenarios:
+  1_drone_only:
+    title: drone image only (outlines from our model)
+    inputs: [ortho]
+    footprint_model: models/footprint_india.onnx
+  2_open_outlines:
+    title: drone image + open building outlines (Google/Microsoft, used as the city's outline layer)
+    inputs: [ortho, footprints]
+    footprints_from: reference

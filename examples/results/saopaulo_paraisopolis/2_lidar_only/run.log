@@ -1,0 +1,7 @@
+[run-area] area 'São Paulo Paraisópolis · LiDAR only (outlines from the classified point cloud)' grade B; missing: ['ortho', 'parcels', 'plans', 'ownership']
+Warning 1: DeprecationWarning: 'Memory' driver is deprecated since GDAL 3.11. Use 'MEM' onwards. Further messages of this type will be suppressed.
+[run-area] 221 buildings from LiDAR building points (no orthophoto model given)
+[run-area] 424 property cards -> examples/results/saopaulo_paraisopolis/2_lidar_only/cards/index.html
+[run-area] indexed register (SQLite, 3D R-tree) -> examples/results/saopaulo_paraisopolis/2_lidar_only/register.sqlite
+[run-area] done in 39.8 s: 221 buildings, 440 units, 424 IDs issued {'provisional': 424, 'flagged': 16}
+[run-area] open examples/results/saopaulo_paraisopolis/2_lidar_only/viewer/index.html in a browser

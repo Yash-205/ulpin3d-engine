@@ -1,0 +1,45 @@
+{
+  "area": "examples/bkc_mumbai",
+  "name": "Bandra Kurla Complex, Mumbai \u00b7 real OpenStreetMap outlines",
+  "parcels": [],
+  "plans": [],
+  "ownership": "no ownership records supplied",
+  "data_grade": "C",
+  "missing": [
+    "ortho",
+    "lidar",
+    "parcels",
+    "plans",
+    "ownership"
+  ],
+  "buildings": {
+    "source": "outlines file footprints/osm_buildings.geojson (7 with declared floor counts)",
+    "count": 204,
+    "with_lidar_height": 7
+  },
+  "plan_outlines": {
+    "buildings_following_plan": 0,
+    "possible_extensions": 0
+  },
+  "checks": {
+    "overlapping_unit_pairs": 0,
+    "bad_storey_heights": 0,
+    "anomaly_outliers": 0
+  },
+  "seconds": 2.3,
+  "crs": "EPSG:32643",
+  "totals": {
+    "buildings": 204,
+    "units": 266,
+    "ids_issued": 69,
+    "by_status": {
+      "flagged": 197,
+      "provisional": 69
+    },
+    "by_kind": {
+      "whole_level": 266
+    },
+    "unsanctioned_floors": [],
+    "encroachments": []
+  }
+}

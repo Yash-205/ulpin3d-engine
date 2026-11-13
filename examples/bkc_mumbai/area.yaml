@@ -1,0 +1,8 @@
+name: Bandra Kurla Complex, Mumbai · real OpenStreetMap outlines
+synthetic: false
+parcel_chars: 12
+source:
+  outlines: OpenStreetMap contributors (ODbL), building ways with building:levels
+    / height
+inputs:
+- footprints

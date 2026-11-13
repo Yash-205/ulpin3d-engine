@@ -1,0 +1,28 @@
+# Model 2: LiDAR point classification (ground / building / vegetation / other)
+# Pretrain region: Sao Paulo (dense favelas next to high-rises, closest open
+# match to Indian metro morphology). Test tiles are held out with a 1.5 km buffer.
+work_dir: data/pointcloud
+out_dir: runs/pointcloud
+seed: 0
+saopaulo:
+  n_train: 24
+  n_val: 4
+  crop_m: 250          # use the central 250 m x 250 m of each 1.25 km^2 tile (speed)
+  test_tiles:
+    - MDS_color_3315-333.laz   # Paraisopolis favela + high-rise Morumbi
+    - MDS_color_3325-411.laz   # Heliopolis favela
+    - MDS_color_3435-234.laz   # Brasilandia (hillside informal)
+    - MDS_color_3314-243.laz   # Avenida Paulista high-rise core
+features:
+  voxel: 0.3
+  ks: [10, 25, 50]
+  per_class_per_tile: 25000
+  eval_points_per_tile: 150000
+augment:               # randomly blank sensor attributes so the model copes without them
+  drop_rgb: 0.35
+  drop_intensity: 0.3
+  drop_returns: 0.2
+ground: {cell: 1.0, slope: 0.25, max_window_m: 40}
+smooth_k: 8
+rounds: 800
+lgbm: {learning_rate: 0.08, num_leaves: 127}

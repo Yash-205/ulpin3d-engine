@@ -1,0 +1,5 @@
+# Copy this folder, rename it, and drop the survey files into the sub-folders.
+name: "Ward / village name"
+parcel_chars: 12            # 12 = slide format (18-character 3D ULPIN); 14 = full national ULPIN (20 characters)
+permissible_height_m: 30    # zoning height limit, for the air-rights volume (delete if unknown)
+parcel_id_field: ulpin      # column in the parcels file that holds the 2D ULPIN

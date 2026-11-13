@@ -1,0 +1,6 @@
+[run-area] area 'Bandra Kurla Complex, Mumbai · real OpenStreetMap outlines' grade C; missing: ['ortho', 'lidar', 'parcels', 'plans', 'ownership']
+[run-area] 204 buildings from outlines file footprints/osm_buildings.geojson (7 with declared floor counts)
+[run-area] 69 property cards -> examples/results/bkc_mumbai/cards/index.html
+[run-area] indexed register (SQLite, 3D R-tree) -> examples/results/bkc_mumbai/register.sqlite
+[run-area] done in 2.3 s: 204 buildings, 266 units, 69 IDs issued {'flagged': 197, 'provisional': 69}
+[run-area] open examples/results/bkc_mumbai/viewer/index.html in a browser

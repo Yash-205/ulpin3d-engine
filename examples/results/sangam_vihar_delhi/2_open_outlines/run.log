@@ -1,0 +1,6 @@
+[run-area] area 'Sangam Vihar, Delhi · drone image + open building outlines (Google/Microsoft, used as the city's outline layer)' grade C; missing: ['lidar', 'parcels', 'plans', 'ownership']
+[run-area] 108 buildings from outlines file footprints/open_buildings.geojson
+[run-area] 83 property cards -> examples/results/sangam_vihar_delhi/2_open_outlines/cards/index.html
+[run-area] indexed register (SQLite, 3D R-tree) -> examples/results/sangam_vihar_delhi/2_open_outlines/register.sqlite
+[run-area] done in 1.9 s: 108 buildings, 108 units, 83 IDs issued {'provisional': 83, 'flagged': 25}
+[run-area] open examples/results/sangam_vihar_delhi/2_open_outlines/viewer/index.html in a browser

@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ulpin3d"
+version = "0.1.0"
+description = "Bhu-Aadhaar 3D: AI models + pipeline for 3D ULPIN generation (SIH26011, Team Dimension Zero)"
+requires-python = ">=3.10"
+dependencies = [
+  "numpy", "scipy", "pandas", "pyyaml", "requests", "tqdm",
+  "rasterio>=1.3", "geopandas>=0.14", "shapely>=2.0", "pyproj", "pyarrow", "fsspec", "aiohttp", "s2sphere",
+  "scikit-image", "scikit-learn", "lightgbm>=4", "laspy[lazrs]>=2.4", "pillow",
+  "torch>=2.1", "torchvision", "segmentation-models-pytorch>=0.3.3", "albumentations>=1.4",
+  "ezdxf", "pymupdf", "rapidocr_onnxruntime", "matplotlib", "onnx", "onnxruntime", "segno",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "httpx"]
+api = ["fastapi", "uvicorn"]
+
+[tool.setuptools.packages.find]
+include = ["ulpin3d*"]
+
+[tool.setuptools.package-data]
+ulpin3d = ["viewer/*.html", "viewer/vendor/*.js"]
+
+[tool.pytest.ini_options]
+markers = ["slow: trains a tiny model (~1 min on CPU)"]

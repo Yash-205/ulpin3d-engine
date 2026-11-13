@@ -1,0 +1,20 @@
+name: São Paulo Paraisópolis · real city LiDAR (held-out tile), favela + high-rises
+synthetic: false
+parcel_chars: 12
+source:
+  lidar: Prefeitura de Sao Paulo / GeoSampa 2017 LiDAR (classes removed)
+  ortho: true orthophoto rendered from the LiDAR point colours
+  truth: truth/ = the city's own building classes, used only to score the outlines
+# one run per combination of the data this tile really has (no plans / parcels / owners exist for it)
+scenarios:
+  1_drone_lidar:
+    title: drone image + LiDAR (outlines from image + LiDAR height model)
+    inputs: [ortho, lidar]
+    footprint_model: models/footprint_lite_height
+  2_lidar_only:
+    title: LiDAR only (outlines from the classified point cloud)
+    inputs: [lidar]
+  3_drone_only:
+    title: drone image only (outlines from our image model, no heights)
+    inputs: [ortho]
+    footprint_model: models/footprint_india.onnx

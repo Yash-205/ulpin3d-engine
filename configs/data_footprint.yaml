@@ -1,0 +1,35 @@
+# Data for Model 1 (building footprints from drone orthophotos)
+# Regional transfer:  Africa (Open Cities, drone) + South Asia (OAM drone: Bangladesh,
+# Nepal, Sri Lanka ...) -> pretrain;  India (OAM drone) -> fine-tune;  held-out India -> test
+work_dir: data/footprint
+catalog:
+  open_cities:
+    enabled: true
+    tiers: [train_tier_1]
+    cities: [acc, dar, kam, mon, nia, ptn, znz]
+  oam:
+    enabled: true
+    countries: [India, Bangladesh, Nepal, Sri Lanka, Pakistan, Bhutan]
+    max_gsd: 0.20
+    # not settlements: rivers, mangroves, plantations, farms, solar parks, forests
+    exclude_title_regex: "mangrove|plantation|paddy|solar|forest|river|hot water spring|farm|crop|field"
+    max_size_mb: 1500
+  # Held-out Indian test scenes: dense Delhi colony, flooded Vijayawada ward,
+  # Karnataka village (abadi), Varanasi campus + town, Mumbai suburb
+  test_title_regex: "Sangam Vihar|singhnagar-06092024|D10-Raichur-Karnataka-2024-11|IIT BHU|Lokhandwala"
+  test_exclusion_buffer_m: 1000
+  val_frac: 0.1
+labels:
+  min_confidence: 0.70     # Google Open Buildings confidence cut
+register:
+  max_shift_m: 5.0
+chips:
+  out: data/footprint/chips
+  gsd: 0.15                 # metres/pixel the model works at (drone mosaics are resampled)
+  chip_px: 512
+  max_chips_per_scene:      # chips per scene, by region (keeps the dataset ~8 GB)
+    africa: 300
+    south_asia: 60
+    india: 300
+  neg_frac: 0.10
+  min_valid: 0.80

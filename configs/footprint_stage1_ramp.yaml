@@ -1,0 +1,34 @@
+# Stage 1 (v2): pretrain on HUMAN-labelled data first.
+#   open_cities (Africa, drone, OSM/human)  +  ramp (India-Karnataka, Bangladesh, Myanmar; satellite 30 cm,
+#   annotated + reviewed by people)  +  OAM South Asia drone scenes (Google/Microsoft model labels: noisy, so
+#   down-weighted; kept because they are the only drone imagery of South Asian towns).
+# Model selection on HUMAN-labelled Indian validation tiles (ramp Karnataka), not on noisy labels.
+data:
+  chips_root: [data/footprint/chips, data/footprint/chips_ramp]
+  gsd: 0.15
+  chip_px: 512
+  crop_px: 512
+  train_filter: {split: [train], region: [africa, south_asia, india]}
+  val_filter: {split: [val], source: [ramp], region: [india]}
+  max_val_chips: 600
+  sample_by: [source, region]
+  sample_weights: {open_cities/africa: 1.0, ramp/india: 2.0, ramp/south_asia: 1.5, oam/south_asia: 0.5, oam/india: 0.0}
+  aug_strength: strong
+model:
+  arch: Unet
+  encoder: efficientnet-b4
+  encoder_weights: imagenet
+train:
+  out_dir: runs/footprint_stage1
+  epochs: 25
+  steps_per_epoch: 500
+  batch_size: 12
+  lr: 0.0003
+  weight_decay: 0.0001
+  warmup_frac: 0.03
+  num_workers: 4
+  amp: true
+  select_metric: obj_f1
+  early_stop_patience: 8
+loss: {w_building: 1.0, w_dice: 1.0, w_boundary: 1.0, boundary_pos_weight: 3.0}
+postprocess: {mask_thr: 0.5, seed_thr: 0.55, min_area_m2: 6.0, conf_validated: 0.85, conf_provisional: 0.60}
